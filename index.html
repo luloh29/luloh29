@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucas e Loh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333; /* Fundo cinza escuro */
+            color: #fff; /* Texto em branco */
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #ff69b4; /* Cor rosa para o título */
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #add8e6;
+            border-radius: 10px;
+            background-color: #444; /* Fundo das seções */
+        }
+        input {
+            margin: 5px;
+        }
+        .heart {
+            font-size: 30px;
+            color: #ff69b4; /* Cor rosa para o coração */
+        }
+        .emoji-flamengo {
+            color: #FF0000; /* Emojis do Flamengo em vermelho */
+        }
+        .emoji-internacional {
+            color: #FFFFFF; /* Emojis do Internacional em branco */
+        }
+    </style>
+</head>
+<body>
+    <h1>Lucas e Loh estão juntos há:</h1>
+    <div id="contador" class="section"></div>
+    <div class="heart">❤️</div>
+    
+    <div class="section">
+        <h2>Resultados de Futebol desde o nosso começo ⚽️💖</h2>
+        <h3>Flamengo <span class="emoji-flamengo">🟥⬛️</span></h3>
+        <label>Vitórias: <input type="number" id="flamengo-v" value="0"></label><br>
+        <label>Empates: <input type="number" id="flamengo-e" value="0"></label><br>
+        <label>Derrotas: <input type="number" id="flamengo-d" value="0"></label><br>
+        <h3>Internacional <span class="emoji-internacional">🔴⚪️</span></h3>
+        <label>Vitórias: <input type="number" id="internacional-v" value="0"></label><br>
+        <label>Empates: <input type="number" id="internacional-e" value="0"></label><br>
+        <label>Derrotas: <input type="number" id="internacional-d" value="0"></label><br>
+        <button onclick="atualizarResultados()">Atualizar Resultados</button>
+        <div id="resultados" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        const dataInicio = new Date('2023-08-29T00:00:00-03:00');
+
+        function atualizarContador() {
+            const agora = new Date();
+            const tempoDecorrido = agora - dataInicio;
+            const segundos = Math.floor(tempoDecorrido / 1000);
+            const minutos = Math.floor(segundos / 60);
+            const horas = Math.floor(minutos / 60);
+            const dias = Math.floor(horas / 24);
+            const meses = Math.floor(dias / 30); // Aproximado
+            const anos = Math.floor(meses / 12);
+
+            const mes = meses % 12;
+            const dia = dias % 30;
+            const hora = horas % 24;
+            const minuto = minutos % 60;
+            const segundo = segundos % 60;
+
+            document.getElementById('contador').innerHTML = 
+                `${anos} anos, ${mes} meses, ${dia} dias, ${hora} horas, ${minuto} minutos e ${segundo} segundos.`;
+        }
+
+        function carregarResultados() {
+            const flamengo = JSON.parse(localStorage.getItem('flamengo')) || { v: 0, e: 0, d: 0 };
+            const internacional = JSON.parse(localStorage.getItem('internacional')) || { v: 0, e: 0, d: 0 };
+            
+            document.getElementById('flamengo-v').value = flamengo.v;
+            document.getElementById('flamengo-e').value = flamengo.e;
+            document.getElementById('flamengo-d').value = flamengo.d;
+            document.getElementById('internacional-v').value = internacional.v;
+            document.getElementById('internacional-e').value = internacional.e;
+            document.getElementById('internacional-d').value = internacional.d;
+        }
+
+        function atualizarResultados() {
+            const flamengo = {
+                v: parseInt(document.getElementById('flamengo-v').value),
+                e: parseInt(document.getElementById('flamengo-e').value),
+                d: parseInt(document.getElementById('flamengo-d').value),
+            };
+            const internacional = {
+                v: parseInt(document.getElementById('internacional-v').value),
+                e: parseInt(document.getElementById('internacional-e').value),
+                d: parseInt(document.getElementById('internacional-d').value),
+            };
+
+            localStorage.setItem('flamengo', JSON.stringify(flamengo));
+            localStorage.setItem('internacional', JSON.stringify(internacional));
+
+            mostrarResultados(flamengo, internacional);
+        }
+
+        function mostrarResultados(flamengo, internacional) {
+            const flamengoTotal = flamengo.v + flamengo.e + flamengo.d;
+            const internacionalTotal = internacional.v + internacional.e + internacional.d;
+
+            const flamengoAproveitamento = flamengoTotal ? (flamengo.v / flamengoTotal * 100).toFixed(2) : 0;
+            const internacionalAproveitamento = internacionalTotal ? (internacional.v / internacionalTotal * 100).toFixed(2) : 0;
+
+            document.getElementById('resultados').innerHTML = `
+                <h4>Resultados do Flamengo <span class="emoji-flamengo">🟥⬛️</span></h4>
+                Vitórias: ${flamengo.v}, Empates: ${flamengo.e}, Derrotas: ${flamengo.d}, Aproveitamento: ${flamengoAproveitamento}%
+                <h4>Resultados do Internacional <span class="emoji-internacional">🔴⚪️</span></h4>
+                Vitórias: ${internacional.v}, Empates: ${internacional.e}, Derrotas: ${internacional.d}, Aproveitamento: ${internacionalAproveitamento}%
+            `;
+        }
+
+        setInterval(atualizarContador, 1000);
+        carregarResultados(); // Carrega resultados ao iniciar
+        atualizarContador(); // Inicializa o contador
+    </script>
+</body>
+</html>
